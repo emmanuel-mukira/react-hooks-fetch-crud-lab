@@ -19,7 +19,44 @@ function QuestionForm(props) {
 
   function handleSubmit(event) {
     event.preventDefault();
-    console.log(formData);
+    if (
+      formData.prompt.trim() === "" ||
+      formData.answer1.trim() === "" ||
+      formData.answer2.trim() === "" ||
+      formData.answer3.trim() === "" ||
+      formData.answer4.trim() === ""
+    ) {
+      alert("Form is incomplete");
+      return;
+    }
+
+    fetch(`http://localhost:4000/questions`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        prompt: formData.prompt,
+        answers: [
+          formData.answer1,
+          formData.answer2,
+          formData.answer3,
+          formData.answer4,
+        ],
+        correctIndex: parseInt(formData.correctIndex),
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        props.addQuestion(data);
+        setFormData({
+          prompt: "",
+          answer1: "",
+          answer2: "",
+          answer3: "",
+          answer4: "",
+          correctIndex: 0,
+        });
+      })
+      .catch((error) => console.error(error));
   }
 
   return (
